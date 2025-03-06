@@ -15,3 +15,11 @@ export const protect = (req, res, next) => {
         return res.status(403).json({ message: "Invalid token" });
     }
 };
+
+export const isAdmin = (req, res, next) => {
+    if (req.user && req.user.isAdmin) {
+        next();
+    } else {
+        return res.status(403).json({ message: "Unauthorized access" });
+    }
+};
