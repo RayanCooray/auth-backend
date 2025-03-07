@@ -9,6 +9,7 @@ const ProductSchema = new mongoose.Schema({
     ProductBrand: { type: String, required: true, minLength: 2 },
     ProductColor: { type: String, required: true, minLength: 2 },
     ProductSize: { type: String, required: true, minLength: 2 },
+    ProductRating: { type: String, required: true },
     ProductImage: { type: String, optional: true },
 }, { timestamps: true });
 
