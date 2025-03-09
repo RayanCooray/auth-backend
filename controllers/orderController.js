@@ -1,5 +1,6 @@
 import {Order} from "../models/Order.js";
-// Create a new order
+import mongoose from 'mongoose';
+
 export const createOrder = async (req, res) => {
   try {
     const { user, products, totalAmount, payment, shippingAddress } = req.body;
@@ -25,7 +26,7 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// Get all orders
+
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find().populate("user", "name email").populate("products.product", "ProductName ProductPrice");
@@ -36,7 +37,7 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
-// Get a single order by ID
+
 export const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate("user", "name email").populate("products.product", "ProductName ProductPrice");
@@ -52,7 +53,7 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-// Update order status
+
 export const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -74,7 +75,7 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
-// Delete an order
+
 export const deleteOrder = async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);
@@ -87,5 +88,26 @@ export const deleteOrder = async (req, res) => {
   } catch (error) {
     console.error("Delete Order Error:", error);
     res.status(500).json({ success: false, message: "Failed to delete order" });
+  }
+};
+
+
+
+export const getAllOrdersByUserID = async (req, res) => {
+  try {
+    const { userId } = req.params;  
+    
+    const orders = await Order.find({ user: userId })  
+      .populate("user", "name email") 
+      .populate("products.product", "ProductName ProductPrice");  
+    
+    if (orders.length === 0) {
+      return res.status(404).json({ success: false, message: "No orders found for this user" });
+    }
+
+    res.status(200).json({ success: true, data: orders });
+  } catch (error) {
+    console.error("Get Orders Error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch orders" });
   }
 };
