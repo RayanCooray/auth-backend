@@ -28,12 +28,24 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find({});
+        const products = await Product.find({ ProductQuantity: { $gt: 0 } });
+
         res.json(products);
     } catch (error) {
+        console.error("Get All Products Error:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
+
+
+    // export const getAllProducts = async (req, res) => {
+    //     try {
+    //         const products = await Product.find({});
+    //         res.json(products);
+    //     } catch (error) {
+    //         res.status(500).json({ message: "Server error" });
+    //     }
+    // };
 
 export const filterProducts = async (req, res) => {
     try {
