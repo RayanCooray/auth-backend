@@ -2,32 +2,6 @@ import { Order } from "../models/Order.js";
 import { Product } from "../models/Product.js";
 import mongoose from 'mongoose';
 
-// export const createOrder = async (req, res) => {
-//   try {
-//     const { user, products, totalAmount, payment, shippingAddress } = req.body;
-
-//     if (!user || !products || !totalAmount || !payment || !shippingAddress) {
-//       return res.status(400).json({ success: false, message: "Missing required fields" });
-//     }
-
-//     const newOrder = new Order({
-//       user,
-//       products,
-//       totalAmount,
-//       payment,
-//       shippingAddress,
-//       status: "Pending",
-//     });
-
-//     await newOrder.save();
-//     res.status(201).json({ success: true, data: newOrder });
-//   } catch (error) {
-//     console.error("Create Order Error:", error);
-//     res.status(500).json({ success: false, message: "Failed to create order" });
-//   }
-// };
-
-// Import Product model
 
 export const createOrder = async (req, res) => {
   try {
@@ -113,10 +87,10 @@ export const getOrderById = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { id, status } = req.query; 
 
     const order = await Order.findByIdAndUpdate(
-      req.params.id,
+      id,
       { status },
       { new: true }
     );
@@ -131,7 +105,6 @@ export const updateOrderStatus = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to update order" });
   }
 };
-
 
 export const deleteOrder = async (req, res) => {
   try {
