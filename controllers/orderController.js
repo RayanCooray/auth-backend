@@ -1,5 +1,33 @@
-import {Order} from "../models/Order.js";
+import { Order } from "../models/Order.js";
+import { Product } from "../models/Product.js";
 import mongoose from 'mongoose';
+
+// export const createOrder = async (req, res) => {
+//   try {
+//     const { user, products, totalAmount, payment, shippingAddress } = req.body;
+
+//     if (!user || !products || !totalAmount || !payment || !shippingAddress) {
+//       return res.status(400).json({ success: false, message: "Missing required fields" });
+//     }
+
+//     const newOrder = new Order({
+//       user,
+//       products,
+//       totalAmount,
+//       payment,
+//       shippingAddress,
+//       status: "Pending",
+//     });
+
+//     await newOrder.save();
+//     res.status(201).json({ success: true, data: newOrder });
+//   } catch (error) {
+//     console.error("Create Order Error:", error);
+//     res.status(500).json({ success: false, message: "Failed to create order" });
+//   }
+// };
+
+// Import Product model
 
 export const createOrder = async (req, res) => {
   try {
@@ -9,6 +37,7 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
+    console.log("Received products:", products);
     const newOrder = new Order({
       user,
       products,
@@ -19,12 +48,40 @@ export const createOrder = async (req, res) => {
     });
 
     await newOrder.save();
+
+    
+    for (const item of products) {
+      console.log("Processing product:", item); 
+
+      if (!item.product) {
+        return res.status(400).json({ success: false, message: "Product ID is missing in request" });
+      }
+
+      const product = await Product.findById(item.product);
+      if (!product) {
+        return res.status(404).json({ success: false, message: `Product not found: ${item.product}` });
+      }
+
+      
+      let currentStock = parseInt(product.ProductQuantity, 10);
+      let orderQuantity = parseInt(item.quantity, 10);
+
+      if (currentStock < orderQuantity) {
+        return res.status(400).json({ success: false, message: `Insufficient stock for: ${product.ProductName}` });
+      }
+
+      product.ProductQuantity = currentStock - orderQuantity;
+      await product.save();
+    }
+
     res.status(201).json({ success: true, data: newOrder });
   } catch (error) {
     console.error("Create Order Error:", error);
     res.status(500).json({ success: false, message: "Failed to create order" });
   }
 };
+
+
 
 
 export const getAllOrders = async (req, res) => {
