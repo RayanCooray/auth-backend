@@ -69,6 +69,7 @@ export const filterProducts = async (req, res) => {
 };
 
 
+
 export const getProductById = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -82,4 +83,21 @@ export const getProductById = async (req, res) => {
     }
 };
 
+export const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        await Product.findByIdAndDelete(id);
+
+        res.status(200).json({ success: true, message: "Product deleted successfully" });
+    } catch (error) {
+        console.error("Delete Product Error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 

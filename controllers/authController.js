@@ -5,6 +5,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({}, "-password"); // Excluding passwords from response
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("GetAllUsers Error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
 export const signUp = async (req, res) => {
     try {
         const { fullName, email, password, role } = req.body;
